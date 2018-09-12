@@ -26,16 +26,16 @@ SOFTWARE.
 
 package com.justone.kafka.sink.pg.json;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.common.config.ConfigDef.Type;
+import org.apache.kafka.common.config.ConfigDef.Importance;
 import org.apache.kafka.connect.connector.ConnectorContext;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
-import org.apache.kafka.common.config.Config;
-import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.common.config.ConfigValue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Kafka sink connector for PostgreSQL
@@ -53,7 +53,19 @@ public class PostgreSQLSinkConnector extends SinkConnector {
      */
     private Map<String, String> fProperties;
 
-    private static final ConfigDef CONFIG_DEF = new ConfigDef();
+    private static final ConfigDef CONFIG_DEF = new ConfigDef()
+            .define("tasks.max", Type.INT, Importance.HIGH, "Number of tasks to be assigned to the connector. Mandatory. Must be 1 or more.")
+            .define("topics", Type.STRING, Importance.HIGH, "Topics to consume from. Mandatory.")
+            .define(PostgreSQLSinkTask.HOST_CONFIG, Type.STRING, Importance.HIGH, "Server address/name of the database host (with port if != 5432 `host:port`). Optional. Default is localhost.")
+            .define(PostgreSQLSinkTask.DATABASE_CONFIG, Type.STRING, Importance.HIGH, "Database to connect to. Mandatory.")
+            .define(PostgreSQLSinkTask.USER_CONFIG, Type.STRING, Importance.HIGH, "Username to connect to the database with. Mandatory.")
+            .define(PostgreSQLSinkTask.PASSWORD_CONFIG, Type.STRING, Importance.HIGH, "Password to use for user authentication. Optional. Default is none.")
+            .define(PostgreSQLSinkTask.SCHEMA_CONFIG, Type.STRING, Importance.HIGH, "Schema of the table to append to. Mandatory.")
+            .define(PostgreSQLSinkTask.TABLE_CONFIG, Type.STRING, Importance.HIGH, "Name of the table to append to. Mandatory.")
+            .define(PostgreSQLSinkTask.COLUMN_CONFIG, Type.STRING, Importance.HIGH, "Comma separated list of columns to receive json element values. Mandatory.")
+            .define(PostgreSQLSinkTask.PARSE_CONFIG, Type.STRING, Importance.HIGH, "Comma separated list of parse paths to retrieve json elements by (see below). Mandatory.")
+            .define(PostgreSQLSinkTask.DELIVERY_CONFIG, Type.STRING, Importance.MEDIUM, "Type of delivery. Must be one of fastest, guaranteed, synchronized (see below). Optional. Default is synchronized.")
+            .define(PostgreSQLSinkTask.BUFFER_CONFIG, Type.INT, Importance.HIGH, "Buffer size for caching table writes.");;
 
     /**
      * Returns version of the connector
@@ -147,5 +159,4 @@ public class PostgreSQLSinkConnector extends SinkConnector {
         return configurations;//return task configurations
 
     }//taskConfigs()
-
 }//PostgreSQLSinkConnector{}

@@ -319,7 +319,7 @@ public class PostgreSQLSinkTask extends SinkTask {
         
         iParser.parse(record.value().toString());//parse record value
         
-        /* append parsed JSON elements to the table */
+        /* append parsed JSON ele ments to the table */
         for (int i=0;i<iPaths.length;++i) {//for each parse path
           
           Element element=iParser.getElement(iPaths[i]);//extract element at path
